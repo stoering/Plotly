@@ -1,0 +1,54 @@
+---
+title: "Plotly Assignment"
+author: "STP"
+date: "12/21/2020"
+output: html_document
+---
+
+```{r setup, results = FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(plotly)
+library(dplyr)
+```
+
+## Plotly Assignment
+
+This assignment creates an interactive plot using Plotly. It will use the state data sets that are part of the R Datasets Package. This data set includes the mean number of days with minimum temperatures below freezing, and this will be integrated into the Plotly plot. 
+
+```{r look at data set}
+head(state.x77)
+
+```
+
+
+```{r create data frame}
+
+# Create data frame
+state_frost <- data.frame(State = state.abb, Frost = as.vector(state.x77[,7]))
+
+```
+
+
+
+```{r create the plot}
+
+# Create hover text
+state_frost$hover <- with(state_frost, paste(State, '<br>', "Days of Frost:", Frost))
+# Make state borders red
+borders <- list(color = toRGB("red"))
+# Set up some mapping options
+map_options <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showlakes = TRUE,
+  lakecolor = toRGB('white')
+)
+# makes the plot
+plot_ly(z = ~state_frost$Frost, text = ~state_frost$hover, locations = ~state_frost$State, 
+       type = 'choropleth', locationmode = 'USA-states', 
+       color = state_frost$Frost, colors = 'Blues', marker = list(line = borders)) %>%
+  layout(title = 'US Mean Days of Frost 1931-1960', geo = map_options)
+
+```
+
+Figure 1. This map indicates the mean number of days below freezing in each of the US states from 1931-1960.
